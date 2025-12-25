@@ -3,8 +3,10 @@ import html2canvas from "html2canvas";
 import { ImageUpload } from "@/components/ImageUpload";
 import { MeasurementCard } from "@/components/MeasurementCard";
 import { ShareableResultsCard } from "@/components/ShareableResultsCard";
+import { MeasurementHistory } from "@/components/MeasurementHistory";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useMeasurementHistory } from "@/hooks/useMeasurementHistory";
 import { 
   Ruler, 
   ArrowRight, 
@@ -29,6 +31,7 @@ interface MeasurementResults {
 
 const Index = () => {
   const { toast } = useToast();
+  const { history, addEntry, deleteEntry, clearHistory } = useMeasurementHistory();
   const [frontImage, setFrontImage] = useState<File | null>(null);
   const [sideImage, setSideImage] = useState<File | null>(null);
   const [standImage, setStandImage] = useState<File | null>(null);
@@ -143,12 +146,13 @@ const Index = () => {
 
       const data = await response.json();
       setResults(data);
+      addEntry(data);
       
       toast({
         title: "Measurements ready!",
         description: "Your body measurements have been calculated.",
       });
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to process images. Please try again.",
@@ -250,6 +254,13 @@ const Index = () => {
               </Button>
             </div>
           </section>
+
+          {/* Measurement History */}
+          <MeasurementHistory 
+            history={history} 
+            onDelete={deleteEntry} 
+            onClear={clearHistory} 
+          />
 
           {/* Results Section */}
           {results && (

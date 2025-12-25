@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { Upload, X, User, UserRound } from "lucide-react";
 
 interface ImageUploadProps {
@@ -25,15 +25,24 @@ export const ImageUpload = ({
   const [preview, setPreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
+  // Sync preview with selectedFile prop
+  useEffect(() => {
+    if (!selectedFile) {
+      setPreview(null);
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreview(reader.result as string);
+    };
+    reader.readAsDataURL(selectedFile);
+  }, [selectedFile]);
+
   const handleFile = useCallback(
     (file: File | null) => {
       if (file && file.type.startsWith("image/")) {
         onImageSelect(file);
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setPreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
       }
     },
     [onImageSelect]
@@ -58,10 +67,14 @@ export const ImageUpload = ({
     setIsDragging(false);
   }, []);
 
-  const handleRemove = useCallback(() => {
-    onImageSelect(null);
-    setPreview(null);
-  }, [onImageSelect]);
+  const handleRemove = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onImageSelect(null);
+    },
+    [onImageSelect]
+  );
 
   const Icon = iconMap[icon];
 
@@ -91,10 +104,11 @@ export const ImageUpload = ({
               className="w-full h-full object-cover"
             />
             <button
+              type="button"
               onClick={handleRemove}
               className="absolute top-2 right-2 p-1.5 rounded-full bg-foreground/80 text-background 
                          opacity-0 group-hover:opacity-100 transition-opacity duration-200
-                         hover:bg-destructive"
+                         hover:bg-destructive z-10"
             >
               <X className="w-4 h-4" />
             </button>
