@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 
 interface MeasurementResults {
-  "Height (cm)": number;
+  "Estimated Height (cm)": number;
   "Shoulder (cm)": number;
   "Hip (cm)": number;
   "Arm Length (cm)": number;
@@ -94,7 +94,7 @@ const Index = () => {
   };
 
   const measurementItems = results ? [
-    { label: "Height", value: results["Height (cm)"], icon: MoveVertical },
+    { label: "Height", value: results["Estimated Height (cm)"], icon: MoveVertical },
     { label: "Shoulder Width", value: results["Shoulder (cm)"], icon: Ruler },
     { label: "Hip Width", value: results["Hip (cm)"], icon: CircleDot },
     { label: "Arm Length", value: results["Arm Length (cm)"], icon: Armchair },
