@@ -2,8 +2,6 @@ import { useState } from "react";
 import { ImageUpload } from "@/components/ImageUpload";
 import { MeasurementCard } from "@/components/MeasurementCard";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Ruler, 
@@ -29,7 +27,6 @@ const Index = () => {
   const [frontImage, setFrontImage] = useState<File | null>(null);
   const [sideImage, setSideImage] = useState<File | null>(null);
   const [standImage, setStandImage] = useState<File | null>(null);
-  const [height, setHeight] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<MeasurementResults | null>(null);
 
@@ -43,16 +40,6 @@ const Index = () => {
       return;
     }
 
-    const heightNum = parseFloat(height);
-    if (!height || isNaN(heightNum) || heightNum <= 0) {
-      toast({
-        title: "Invalid height",
-        description: "Please enter a valid height in centimeters.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsLoading(true);
     setResults(null);
 
@@ -61,7 +48,6 @@ const Index = () => {
       formData.append("front", frontImage);
       formData.append("side", sideImage);
       formData.append("stand", standImage);
-      formData.append("height_cm", heightNum.toString());
 
       const response = await fetch(
         "https://abhishek785-ai-body-measurement.hf.space/predict",
@@ -94,9 +80,9 @@ const Index = () => {
   };
 
   const measurementItems = results ? [
-    { label: "Height", value: results["Estimated Height (cm)"], icon: MoveVertical },
-    { label: "Shoulder Width", value: results["Shoulder (cm)"], icon: Ruler },
-    { label: "Hip Width", value: results["Hip (cm)"], icon: CircleDot },
+    { label: "Estimated Height", value: results["Estimated Height (cm)"], icon: MoveVertical },
+    { label: "Shoulder", value: results["Shoulder (cm)"], icon: Ruler },
+    { label: "Hip", value: results["Hip (cm)"], icon: CircleDot },
     { label: "Arm Length", value: results["Arm Length (cm)"], icon: Armchair },
     { label: "Leg / Inseam", value: results["Leg / Inseam (cm)"], icon: Footprints },
   ] : [];
@@ -162,25 +148,7 @@ const Index = () => {
               />
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 items-end">
-              <div className="flex-1 w-full">
-                <Label htmlFor="height" className="text-sm font-medium mb-2 block">
-                  Your Height
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="height"
-                    type="number"
-                    placeholder="Enter height"
-                    value={height}
-                    onChange={(e) => setHeight(e.target.value)}
-                    className="pr-12 h-12 text-lg"
-                  />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">
-                    cm
-                  </span>
-                </div>
-              </div>
+            <div className="flex justify-center">
               <Button
                 variant="hero"
                 size="lg"
@@ -210,12 +178,9 @@ const Index = () => {
                 <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2">
                   Your Measurements
                 </h2>
-                <p className="text-muted-foreground">
-                  Results are approximate estimates based on AI pose analysis.
-                </p>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
                 {measurementItems.map((item, index) => (
                   <MeasurementCard
                     key={item.label}
@@ -227,6 +192,10 @@ const Index = () => {
                   />
                 ))}
               </div>
+
+              <p className="text-center text-sm text-muted-foreground">
+                Measurements are approximate and generated using AI-based pose estimation.
+              </p>
             </section>
           )}
         </div>
