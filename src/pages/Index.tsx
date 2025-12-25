@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import html2canvas from "html2canvas";
 import { ImageUpload } from "@/components/ImageUpload";
 import { MeasurementCard } from "@/components/MeasurementCard";
+import { ShareableResultsCard } from "@/components/ShareableResultsCard";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -11,7 +13,10 @@ import {
   CircleDot, 
   Armchair, 
   Footprints,
-  Loader2
+  Loader2,
+  Download,
+  Share2,
+  RotateCcw
 } from "lucide-react";
 
 interface MeasurementResults {
@@ -29,6 +34,81 @@ const Index = () => {
   const [standImage, setStandImage] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<MeasurementResults | null>(null);
+  const resultsCardRef = useRef<HTMLDivElement>(null);
+
+  const handleReset = () => {
+    setFrontImage(null);
+    setSideImage(null);
+    setStandImage(null);
+    setResults(null);
+  };
+
+  const handleDownload = async () => {
+    if (!resultsCardRef.current) return;
+    
+    try {
+      const canvas = await html2canvas(resultsCardRef.current, {
+        backgroundColor: null,
+        scale: 2,
+      });
+      
+      const link = document.createElement("a");
+      link.download = "body-measurements.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+      
+      toast({
+        title: "Downloaded!",
+        description: "Your measurement card has been saved.",
+      });
+    } catch {
+      toast({
+        title: "Download failed",
+        description: "Could not generate image. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleShare = async () => {
+    if (!resultsCardRef.current) return;
+    
+    try {
+      const canvas = await html2canvas(resultsCardRef.current, {
+        backgroundColor: null,
+        scale: 2,
+      });
+      
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+        
+        const file = new File([blob], "body-measurements.png", { type: "image/png" });
+        
+        if (navigator.share && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            title: "My Body Measurements",
+            text: "Check out my AI-generated body measurements!",
+            files: [file],
+          });
+        } else {
+          // Fallback: copy to clipboard or download
+          await navigator.clipboard.write([
+            new ClipboardItem({ "image/png": blob }),
+          ]);
+          toast({
+            title: "Copied to clipboard!",
+            description: "The image has been copied to your clipboard.",
+          });
+        }
+      });
+    } catch {
+      toast({
+        title: "Share failed",
+        description: "Could not share image. Try downloading instead.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleSubmit = async () => {
     if (!frontImage || !sideImage || !standImage) {
@@ -193,9 +273,30 @@ const Index = () => {
                 ))}
               </div>
 
-              <p className="text-center text-sm text-muted-foreground">
+              <p className="text-center text-sm text-muted-foreground mb-8">
                 Measurements are approximate and generated using AI-based pose estimation.
               </p>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap justify-center gap-4">
+                <Button variant="outline" onClick={handleDownload}>
+                  <Download className="w-4 h-4 mr-2" />
+                  Download Card
+                </Button>
+                <Button variant="outline" onClick={handleShare}>
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Share
+                </Button>
+                <Button variant="hero" onClick={handleReset}>
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  New Measurement
+                </Button>
+              </div>
+
+              {/* Hidden shareable card for export */}
+              <div className="fixed -left-[9999px] top-0">
+                <ShareableResultsCard ref={resultsCardRef} results={results} />
+              </div>
             </section>
           )}
         </div>
