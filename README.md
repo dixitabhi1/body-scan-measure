@@ -1,8 +1,17 @@
 # Welcome to your Lovable project
 
 ## Project info
+This project presents a complete, end-to-end solution for estimating approximate human body measurements from a set of three standard pose images (front, side, and standing full-body). Developed for the Voms Tech Machine Round, this system demonstrates a robust, explainable, and deployable AI/ML pipeline that meets all mandatory output and submission requirements.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+The core of the solution is a hybrid approach combining state-of-the-art computer vision for pose estimation with a machine learning regression model for robust measurement prediction.
+
+## 🔗 Live Demo and API
+
+*   **Working Web-Based Frontend Demo:** [https://body-scan-measure.vercel.app/](https://body-scan-measure.vercel.app/) or [https://vomstechfinal.vercel.app/](https://vomstechfinal.vercel.app/)
+*   **Web Frontend Repository:**[https://github.com/dixitabhi1/body-scan-measure](https://github.com/dixitabhi1/body-scan-measure)
+*   **Core ML/CV Repository:**[https://github.com/dixitabhi1/vomstech_TA_final](https://github.com/dixitabhi1/vomstech_TA_final)
+*   **Swagger API Documentation:** [https://abhishek785-ai-body-measurement.hf.space/docs](https://abhishek785-ai-body-measurement.hf.space/docs)
+*   **Planning and execution:(using Notion)**[https://www.notion.so/AI-Body-Measurement-Project-Retrospective-Final-Submission-2d5f3b5325a48102b04dcc8d18668932](https://www.notion.so/AI-Body-Measurement-Project-Retrospective-Final-Submission-2d5f3b5325a48102b04dcc8d18668932)
 
 ## How can I edit this code?
 
